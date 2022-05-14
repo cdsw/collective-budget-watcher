@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <div className="main">
-        <div className="main-header">Vietnam 2022<br/>Borrowing/Repaying Flow</div>
+        <div className="main-header">Vietnam 2022<br/>Borrowing/Repayment Flow</div>
         <div>
           <a href='/read'><Button>List of Trxs</Button></a>
           <a href='/create'><Button>Create A New Trx</Button></a>

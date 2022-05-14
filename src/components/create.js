@@ -138,7 +138,7 @@ export default function Create() {
                 </div>
                 <div className='warning'>
                     <div>{!valid.fromTo ? 'Please select money flow direction.' : null}</div>
-                    <div>{!valid.amount ? 'Enter value only.' : null}</div>
+                    <div>{!valid.amount ? 'Enter non-negative value only.' : null}</div>
                     <div>{!valid.descriptor ? 'Please add a trx description.' : null}</div>
                     <div>{!valid.signature ? 'Provide a valid signature.' : null}</div>
                 </div>
