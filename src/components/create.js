@@ -37,7 +37,7 @@ export default function Create() {
         if (valid.fromTo && valid.amount && valid.descriptor && valid.signature){
             // Send email here
             //sendEmail() OPEN ONLY ON JUL 15
-            const timestamp = moment().format('YYYY.MM.DD HH:mm:ss')
+            const timestamp = moment().format('MM/DD HH:mm')
             axios.post(mk.mdta, {
                 timestamp, fromTo, amount, descriptor, signature
             }).then(() => {
@@ -48,11 +48,12 @@ export default function Create() {
 
     function sendEmail() {
         const params = {
-            timestamp: moment().format('MM.DD HH:mm'),
+            timestamp: moment().format('MM/DD HH:mm'),
             direction: fromTo,
             amount: amount,
             descriptor: descriptor,
-            signature: signature
+            signature: sigs.cl_sig.includes(signature) ? 'CL' :
+                        ( sigs.rw_sig.includes(signature) ? 'RW' : '--')
         }
         console.log(mk.sit, mk.tid)
         emailjs.send(mk.sit, mk.tid, params, mk.yse).then(
