@@ -42,6 +42,7 @@ table {
   text-align: left;
   width: 100%;
   max-width: 90vw;
+  font-family: 'Merriweather Sans';
 }
 
 .tab-head {
@@ -102,4 +103,22 @@ span {
   flex-direction: column;
   color: #EEA020;
   padding-top: 10px;
+}
+
+.container {
+  font-family: 'Merriweather Sans';
+}
+
+.signature-text {
+  color: #eeeeee;
+  font-size: 9em;
+}
+
+.menu-buttons {
+  margin-bottom: 18px;
+}
+
+.popup-sign {
+  display: flex;
+  gap: 4px;
 }

@@ -1,20 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Table, Button } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
 import mk from '../tchot/mk.js'
 import sigs from '../tchot/sigs.js'
-
-function getID(num){
-    switch(num){
-        case 0:
-            return 'CL'
-        case 1:
-            return 'RW'
-        default:
-            return ''
-    }
-}
 
 function parseFromTo(fromTo) {
     switch(fromTo) {
@@ -22,6 +9,8 @@ function parseFromTo(fromTo) {
             return 'RW > CL'
         case '1/0':
             return 'CL > RW'
+        default:
+            return ''
     }
 }
 
@@ -30,9 +19,9 @@ function calculate(alldata) {
     var r2cl = 0
     for (let i = 0; i < alldata.length; i++) {
         const amt = parseFloat(alldata[i].amount)
-        if (alldata[i].fromTo[0] == '0') {
+        if (alldata[i].fromTo[0] === '0') {
             r2cl += amt
-        } else if (alldata[i].fromTo[0] == '1') {
+        } else if (alldata[i].fromTo[0] === '1') {
             cl2r += amt
         }
     }
@@ -42,6 +31,9 @@ function calculate(alldata) {
         r2cl = 0
     } else if (r2cl > cl2r) {
         r2cl -= cl2r
+        cl2r = 0
+    } else if (cl2r === r2cl) {
+        r2cl = 0
         cl2r = 0
     }
     return [cl2r, r2cl]
@@ -55,31 +47,7 @@ export default function Read() {
                 setAPIData(response.data);
             })
     }, []);
-
-    const setData = (data) => {
-        let { id, timestamp, fromTo, amount, descriptor, signature } = data;
-        localStorage.setItem('ID', id);
-        localStorage.setItem('Time', timestamp);
-        localStorage.setItem('Direction', fromTo);
-        localStorage.setItem('Amount', amount);
-        localStorage.setItem('Description', descriptor)
-        localStorage.setItem('Signature', signature)
-    }
-
-    const getData = () => {
-        axios.get(mk.mdta)
-            .then((getData) => {
-                setAPIData(getData.data);
-            })
-    }
-
-    const onDelete = (id) => {
-        axios.delete(`${mk.mdta}/${id}`)
-        .then(() => {
-            getData();
-        })
-    }
-
+    
     function compare(a, b){
         if (a.id > b.id) {
             return -1
@@ -100,10 +68,9 @@ export default function Read() {
                     <div>No debt present</div>
                 )
             }
-            
             <table>
                 <tr className='tab-head'>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Time</th>
                     <th>Dir.</th>
                     <th>VNDk</th>
@@ -119,7 +86,7 @@ export default function Read() {
                             <td className='tab-id'>{parseFromTo(data.fromTo)}</td>
                             <td className='tab-amt'>{data.amount}</td>
                             <td className='tab-con'>{data.descriptor}</td>
-                            <td className='tab-con'>{
+                            <td className='tab-id'>{
                                 sigs.cl_sig.includes(data.signature) ? 'CL' :
                                 ( sigs.rw_sig.includes(data.signature) ? 'RW' : '--')
                             }</td>

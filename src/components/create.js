@@ -100,7 +100,7 @@ export default function Create() {
         <div>
             <Form className="create-form">
                 <Form.Field>
-                    <label>From ~ To</label>
+                    <label>Direction</label>
                     <Radio label={getID(1) + " needs to pay " + getID(0)}
                             checked={fromTo === '0/1'} 
                             name='fromto' 
@@ -116,25 +116,28 @@ export default function Create() {
                     <label>Amount in 1,000 VND</label>
                     <input placeholder='Amount' 
                             type='number'
+                            autoComplete='off'
                             onChange={(e) => setAmount_(e.target.value)}
                             value={amount}/>
                 </Form.Field>
                 <Form.Field>
                     <label>Descriptor</label>
                     <input placeholder='Description' 
+                            autoComplete='off'
                             onChange={(e) => setDescriptor_(e.target.value)}
                             value={descriptor}/>
                 </Form.Field>
                 <Form.Field>
                     <label>Signature</label>
                     <input placeholder='Signature'
-                            type='password' 
+                            autoComplete='off'
+                            type='password'
                             onChange={(e) => setSignature_(e.target.value)}
                             value={signature}/>
                 </Form.Field>
                 <div>
-                    <Button onClick={postData} type='submit'>Submit</Button>
-                    <Button onClick={() => clearData()} type='clear'>Clear</Button>
+                    <Button color='blue' onClick={postData} type='submit'>Submit</Button>
+                    <Button color='black' onClick={() => clearData()} type='clear'>Clear</Button>
                 </div>
                 <div className='warning'>
                     <div>{!valid.fromTo ? 'Please select money flow direction.' : null}</div>
