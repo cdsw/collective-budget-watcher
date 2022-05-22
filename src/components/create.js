@@ -6,6 +6,8 @@ import moment from 'moment'
 import emailjs from 'emailjs-com'
 import mk from '../tchot/mk.js'
 import sigs from '../tchot/sigs.js'
+import { sha256 } from 'js-sha256';
+import 'moment-timezone'
 
 function getID(num){
     switch(num){
@@ -16,6 +18,14 @@ function getID(num){
         default:
             return ''
     }
+}
+
+function getSigID(sig) {
+    if (sigs.cl_sig.includes(sha256(sig))) {
+        return 'CL'
+    } else if (sigs.rw_sig.includes(sha256(sig))) {
+        return 'RW'
+    } return '--'
 }
 
 export default function Create() {
@@ -31,15 +41,16 @@ export default function Create() {
         'signature' : false
     })
 
-    console.log(amount)
     const postData = () => {
         // check validity
         if (valid.fromTo && valid.amount && valid.descriptor && valid.signature){
             // Send email here
             //sendEmail() OPEN ONLY ON JUL 15
-            const timestamp = moment().format('MM/DD HH:mm')
+            const tstamp = moment()
+            const timestamp = tstamp.tz('Asia/Ho_Chi_Minh').format('MM/DD HH:mm')
+            const s256id = getSigID(signature)
             axios.post(mk.mdta, {
-                timestamp, fromTo, amount, descriptor, signature
+                timestamp, fromTo, amount, descriptor, s256id
             }).then(() => {
                 history.push('/read')
             })
@@ -47,15 +58,16 @@ export default function Create() {
     }
 
     function sendEmail() {
+        const s256 = sha256(signature)
+        const tstamp = moment()
         const params = {
-            timestamp: moment().format('MM/DD HH:mm'),
+            timestamp: tstamp.tz('Asia/Ho_Chi_Minh').format('MM/DD HH:mm'),
             direction: fromTo,
             amount: amount,
             descriptor: descriptor,
-            signature: sigs.cl_sig.includes(signature) ? 'CL' :
-                        ( sigs.rw_sig.includes(signature) ? 'RW' : '--')
+            signature: sigs.cl_sig.includes(sha256) ? 'CL' :
+                        ( sigs.rw_sig.includes(sha256) ? 'RW' : '--')
         }
-        console.log(mk.sit, mk.tid)
         emailjs.send(mk.sit, mk.tid, params, mk.yse).then(
             function(response) {console.log('Sent');},
             function(error) {console.log('Error');}
@@ -78,7 +90,8 @@ export default function Create() {
     }
 
     function setSignature_(value) {
-        setValid({...valid, 'signature' : (sigs.cl_sig.includes(value) || sigs.rw_sig.includes(value))})
+        const v256 = sha256(value)
+        setValid({...valid, 'signature' : (sigs.cl_sig.includes(v256) || sigs.rw_sig.includes(v256))})
         setSignature(value)
     }
 

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import mk from '../tchot/mk.js'
-import sigs from '../tchot/sigs.js'
 
 function parseFromTo(fromTo) {
     switch(fromTo) {
@@ -49,9 +48,9 @@ export default function Read() {
     }, []);
     
     function compare(a, b){
-        if (a.id > b.id) {
+        if (parseInt(a.id) > parseInt(b.id)) {
             return -1
-        } if (a.id < b.id) {
+        } if (parseInt(a.id) > parseInt(b.id)) {
             return 1
         } return 0
     }
@@ -81,15 +80,12 @@ export default function Read() {
                 {APIData.sort(compare).map((data) => {
                     return (
                         <tr>
-                            <td className='tab-id'>{data.id}</td>
+                            <td className='tab-amt'>{data.id}</td>
                             <td className='tab-id'>{data.timestamp}</td>
                             <td className='tab-id'>{parseFromTo(data.fromTo)}</td>
                             <td className='tab-amt'>{data.amount}</td>
                             <td className='tab-con'>{data.descriptor}</td>
-                            <td className='tab-id'>{
-                                sigs.cl_sig.includes(data.signature) ? 'CL' :
-                                ( sigs.rw_sig.includes(data.signature) ? 'RW' : '--')
-                            }</td>
+                            <td className='tab-id'>{data.s256id}</td>
 
                         </tr>
                     )
