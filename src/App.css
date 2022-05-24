@@ -35,6 +35,12 @@
   font-family: 'Merriweather Sans' !important;
 }
 
+.hash-show {
+  max-width: 90vw;
+  overflow-wrap: break-word;
+  font-family: 'BIZ UDGothic';
+}
+
 table {
   background-color: #171717;
   padding: 15px;

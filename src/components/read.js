@@ -38,8 +38,19 @@ function calculate(alldata) {
     return [cl2r, r2cl]
 }
 
+function breakHash(h) {
+    const arrHash = h.match(/.{1,8}/g);
+    let strHash = ''
+    for (let i = 0; i < arrHash.length; i++) {
+        strHash += arrHash[i] + ' '
+    }
+    return strHash
+}
+
 export default function Read() {
     const [APIData, setAPIData] = useState([]);
+    const [hashShow, setHashShow] = useState('')
+
     useEffect(() => {
         axios.get(mk.mdta)
             .then((response) => {
@@ -55,6 +66,10 @@ export default function Read() {
         } return 0
     }
 
+    function showHash(id, hash) {
+        setHashShow(`TRX# ${id}, Hash: ${breakHash(hash)}`)
+    }
+
     const debts = calculate(APIData)
 
     return ( 
@@ -67,6 +82,10 @@ export default function Read() {
                     <div>No debt present</div>
                 )
             }
+            <div className="hash-show">
+                {hashShow}
+            </div>
+
             <table>
                 <tr className='tab-head'>
                     <th>#</th>
@@ -85,8 +104,7 @@ export default function Read() {
                             <td className='tab-id'>{parseFromTo(data.fromTo)}</td>
                             <td className='tab-amt'>{data.amount}</td>
                             <td className='tab-con'>{data.descriptor}</td>
-                            <td className='tab-id'>{data.s256id}</td>
-
+                            <td className='tab-id' onClick={() => showHash(data.id, data.hashv)}>{data.s256id}</td>
                         </tr>
                     )
                 })}

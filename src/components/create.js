@@ -10,7 +10,7 @@ import { sha256 } from 'js-sha256';
 import 'moment-timezone'
 
 function getID(num){
-    switch(num){
+    switch(parseInt(num)){
         case 0:
             return 'CL'
         case 1:
@@ -18,6 +18,19 @@ function getID(num){
         default:
             return ''
     }
+}
+
+function breakHash(h) {
+    const arrHash = h.match(/.{1,8}/g);
+    let strHash = ''
+    for (let i = 0; i < arrHash.length; i++) {
+        strHash += arrHash[i] + ' '
+    }
+    return strHash
+}
+
+function getHash(tsp, fromTo, amount, descriptor, signature) {
+    return sha256(`${tsp}${fromTo}${descriptor}${signature}${amount}${amount}`)
 }
 
 function getSigID(sig) {
@@ -40,17 +53,21 @@ export default function Create() {
         'descriptor' : false,
         'signature' : false
     })
+    const [tsp, setTsp] = useState(moment())
+    const [hashx, setHashx] = useState('')
 
     const postData = () => {
         // check validity
+        setTsp(moment())
+        setHashx(getHash(tsp, fromTo, amount, descriptor, signature))
+        const hashv = getHash(tsp, fromTo, amount, descriptor, signature)
         if (valid.fromTo && valid.amount && valid.descriptor && valid.signature){
             // Send email here
-            //sendEmail() OPEN ONLY ON JUL 15
-            const tstamp = moment()
-            const timestamp = tstamp.tz('Asia/Ho_Chi_Minh').format('MM/DD HH:mm')
+            sendEmail()
+            const timestamp = tsp.tz('Asia/Ho_Chi_Minh').format('MM/DD HH:mm')
             const s256id = getSigID(signature)
             axios.post(mk.mdta, {
-                timestamp, fromTo, amount, descriptor, s256id
+                timestamp, fromTo, amount, descriptor, s256id, hashv
             }).then(() => {
                 history.push('/read')
             })
@@ -59,14 +76,15 @@ export default function Create() {
 
     function sendEmail() {
         const s256 = sha256(signature)
-        const tstamp = moment()
+        const hashv = getHash(tsp, fromTo, amount, descriptor, signature)
         const params = {
-            timestamp: tstamp.tz('Asia/Ho_Chi_Minh').format('MM/DD HH:mm'),
-            direction: fromTo,
+            timestamp: tsp.tz('Asia/Ho_Chi_Minh').format('MM.DD HH:mm'),
+            direction: `${getID(fromTo.split('/')[0])} > ${getID(fromTo.split('/')[1])}`,
             amount: amount,
             descriptor: descriptor,
-            signature: sigs.cl_sig.includes(sha256) ? 'CL' :
-                        ( sigs.rw_sig.includes(sha256) ? 'RW' : '--')
+            signature: sigs.cl_sig.includes(s256) ? 'CL' :
+                        ( sigs.rw_sig.includes(s256) ? 'RW' : '--'),
+            hash: breakHash(hashv),
         }
         emailjs.send(mk.sit, mk.tid, params, mk.yse).then(
             function(response) {console.log('Sent');},
@@ -86,7 +104,7 @@ export default function Create() {
 
     function setDescriptor_(value) {
         setDescriptor(value)
-        setValid({...valid, 'descriptor' : value.length > 1})
+        setValid({...valid, 'descriptor' : value.length > 0})
     }
 
     function setSignature_(value) {
@@ -159,6 +177,7 @@ export default function Create() {
                     <div>{!valid.signature ? 'Provide a valid signature.' : null}</div>
                 </div>
             </Form>
+            {hashx.slice(0,10)}
         </div>
     )
 }
