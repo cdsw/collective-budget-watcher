@@ -1,17 +1,9 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Fragment } from 'react/cjs/react.production.min';
 import mk from '../tchot/mk.js'
 
-function parseFromTo(fromTo) {
-    switch(fromTo) {
-        case '0/1':
-            return 'RW > CL'
-        case '1/0':
-            return 'CL > RW'
-        default:
-            return ''
-    }
-}
+import { parseFromTo, breakHash } from '../utils.js'
 
 function calculate(alldata) {
     var cl2r = 0
@@ -38,18 +30,10 @@ function calculate(alldata) {
     return [cl2r, r2cl]
 }
 
-function breakHash(h) {
-    const arrHash = h.match(/.{1,8}/g);
-    let strHash = ''
-    for (let i = 0; i < arrHash.length; i++) {
-        strHash += arrHash[i] + ' '
-    }
-    return strHash
-}
 
 export default function Read() {
     const [APIData, setAPIData] = useState([]);
-    const [hashShow, setHashShow] = useState('')
+    const [hashShow, setHashShow] = useState({id: '', hash: ''})
 
     useEffect(() => {
         axios.get(mk.mdta)
@@ -67,7 +51,7 @@ export default function Read() {
     }
 
     function showHash(id, hash) {
-        setHashShow(`TRX# ${id}, Hash: ${breakHash(hash)}`)
+        setHashShow({id: id, hash: hash})
     }
 
     const debts = calculate(APIData)
@@ -82,9 +66,6 @@ export default function Read() {
                     <div>No debt present</div>
                 )
             }
-            <div className="hash-show">
-                {hashShow}
-            </div>
 
             <table>
                 <tr className='tab-head'>
@@ -98,14 +79,25 @@ export default function Read() {
 
                 {APIData.sort(compare).map((data) => {
                     return (
-                        <tr>
-                            <td className='tab-amt'>{data.id}</td>
-                            <td className='tab-id'>{data.timestamp}</td>
-                            <td className='tab-id'>{parseFromTo(data.fromTo)}</td>
-                            <td className='tab-amt'>{data.amount}</td>
-                            <td className='tab-con'>{data.descriptor}</td>
-                            <td className='tab-id' onClick={() => showHash(data.id, data.hashv)}>{data.s256id}</td>
-                        </tr>
+                        <Fragment>
+                            <tr className={'data-row'} onClick={() => showHash(data.id, data.hashv)}>
+                                <td className='tab-amt'>{data.id}</td>
+                                <td className='tab-id'>{data.timestamp}</td>
+                                <td className='tab-id'>{parseFromTo(data.fromTo)}</td>
+                                <td className='tab-amt'>{data.amount}</td>
+                                <td className='tab-con'>{data.descriptor}</td>
+                                <td className='tab-id' >{data.s256id}</td>
+                            </tr>
+                            { data.id === hashShow.id ?
+                                <tr>
+                                    <td colSpan="6" className="hash-show">
+                                        {`^ Hash: ${breakHash(hashShow.hash)}`}
+                                    </td>
+                                </tr> : null
+                            }
+                            
+                        </Fragment>
+                        
                     )
                 })}
             </table>

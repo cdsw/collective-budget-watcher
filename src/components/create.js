@@ -9,37 +9,7 @@ import sigs from '../tchot/sigs.js'
 import { sha256 } from 'js-sha256';
 import 'moment-timezone'
 
-function getID(num){
-    switch(parseInt(num)){
-        case 0:
-            return 'CL'
-        case 1:
-            return 'RW'
-        default:
-            return ''
-    }
-}
-
-function breakHash(h) {
-    const arrHash = h.match(/.{1,8}/g);
-    let strHash = ''
-    for (let i = 0; i < arrHash.length; i++) {
-        strHash += arrHash[i] + ' '
-    }
-    return strHash
-}
-
-function getHash(tsp, fromTo, amount, descriptor, signature) {
-    return sha256(`${tsp}${fromTo}${descriptor}${signature}${amount}${amount}`)
-}
-
-function getSigID(sig) {
-    if (sigs.cl_sig.includes(sha256(sig))) {
-        return 'CL'
-    } else if (sigs.rw_sig.includes(sha256(sig))) {
-        return 'RW'
-    } return '--'
-}
+import { getID, breakHash, getHash, getSigID } from '../utils.js'
 
 export default function Create() {
     let history = useHistory();
@@ -78,7 +48,7 @@ export default function Create() {
         const s256 = sha256(signature)
         const hashv = getHash(tsp, fromTo, amount, descriptor, signature)
         const params = {
-            timestamp: tsp.tz('Asia/Ho_Chi_Minh').format('MM.DD HH:mm'),
+            timestamp: tsp.tz('Asia/Ho_Chi_Minh').format('MM.DD HH:mm:ss'),
             direction: `${getID(fromTo.split('/')[0])} > ${getID(fromTo.split('/')[1])}`,
             amount: amount,
             descriptor: descriptor,
@@ -98,7 +68,7 @@ export default function Create() {
     }
 
     function setAmount_(value) {
-        setValid({...valid, 'amount' : value > 0})
+        setValid({...valid, 'amount' : value >= 0})
         setAmount(value)
     }
 
@@ -152,15 +122,15 @@ export default function Create() {
                             value={amount}/>
                 </Form.Field>
                 <Form.Field>
-                    <label>Descriptor</label>
+                    <label>Description</label>
                     <input placeholder='Description' 
                             autoComplete='off'
                             onChange={(e) => setDescriptor_(e.target.value)}
                             value={descriptor}/>
                 </Form.Field>
                 <Form.Field>
-                    <label>Signature</label>
-                    <input placeholder='Signature'
+                    <label>Password</label>
+                    <input placeholder='Password'
                             autoComplete='off'
                             type='password'
                             onChange={(e) => setSignature_(e.target.value)}
@@ -174,7 +144,7 @@ export default function Create() {
                     <div>{!valid.fromTo ? 'Please select money flow direction.' : null}</div>
                     <div>{!valid.amount ? 'Enter non-negative value only.' : null}</div>
                     <div>{!valid.descriptor ? 'Please add a trx description.' : null}</div>
-                    <div>{!valid.signature ? 'Provide a valid signature.' : null}</div>
+                    <div>{!valid.signature ? 'Provide a valid password.' : null}</div>
                 </div>
             </Form>
             {hashx.slice(0,10)}
