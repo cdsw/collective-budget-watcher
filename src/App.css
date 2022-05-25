@@ -49,6 +49,7 @@ table {
   width: 100%;
   max-width: 90vw;
   font-family: 'Merriweather Sans';
+  margin-top: 13px;
 }
 
 .tab-head {
@@ -134,4 +135,90 @@ span {
 
 .data-row {
   position: relative;
+}
+
+.summary-header {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 350px;
+  max-width: 75vw;
+  margin-top: 25px;
+}
+
+.card {
+  width: 100%;
+  border-radius: 7px;
+  background-color: #404040;
+  margin-bottom: 13px;
+}
+
+.card-header {
+  display: grid;
+  grid-template-columns: 44px 44px 1fr 2fr;
+  font-size: 1.2em;
+  font-weight: 700;
+  height: 32px;
+  padding: 7px;
+  align-items: center;
+}
+
+.card-id {
+  font-size: 1.1em;
+  justify-self: right;
+}
+
+.card-date {
+  font-size: 1em;
+  justify-self: right;
+  font-weight: 400;
+}
+
+.text-rw {
+  color: #00DCFF;
+  font-size: inherit;
+}
+
+.text-cl {
+  color: #ECBF00;
+  font-size: inherit;
+}
+
+.card-body {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  padding: 7px;
+  background-color: #171717;
+}
+
+.card-amount-container {
+  justify-self: right;
+  text-align: right;
+  font-weight: 700;
+}
+
+.card-amount {
+  font-size: 1.4em;
+  font-family: 'BIZ UDGothic';
+}
+
+.card-description {
+  font-weight: 300;
+}
+
+.card-footer {
+  border-radius: 0 0 7px 7px;
+  background-color: #303030;
+  padding: 3px 5px 3px 5px;
+}
+
+.card-sig {
+  display: flex;
+  font-size: 0.68em;
+  justify-content: center;
 }
